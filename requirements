@@ -1,1 +1,5 @@
-ffmpeg
+streamlit
+yt-dlp
+requests
+beautifulsoup4
+pillow

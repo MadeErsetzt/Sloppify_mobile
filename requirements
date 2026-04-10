@@ -1,5 +1,5 @@
 streamlit
-yt-dlp
+yt_dlp
+Pillow
 requests
 beautifulsoup4
-pillow

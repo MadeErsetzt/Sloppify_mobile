@@ -12,20 +12,26 @@ st.set_page_config(page_title="Slopify Mobile", page_icon="🍌", layout="wide")
 # --- STEP 1: MATCHING THE DESKTOP VIBE (CSS) ---
 st.markdown("""
     <style>
-    /* Pulsing Red Logo - Matches self.update_label_color in PC version */
+    /* Import the font from Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&display=swap');
+
+    /* Pulsing Red Logo */
     @keyframes pulse {
         0% { color: #550000; }
         50% { color: #ff0000; }
         100% { color: #550000; }
     }
+    
     .slopify-logo {
-        font-family: 'UnifrakturCook', 'serif';
+        /* Use the imported font first, fallback to serif */
+        font-family: 'UnifrakturCook', serif;
         font-size: 42px;
         font-weight: bold;
         text-align: center;
         animation: pulse 3s infinite;
         margin-bottom: 0px;
     }
+    
     .sub-text {
         color: #777777;
         text-align: center;
@@ -33,15 +39,9 @@ st.markdown("""
         margin-top: -10px;
         margin-bottom: 20px;
     }
-    /* Dark Theme Fixes to match CustomTkinter Dark Mode */
+
     .stApp { background-color: #121212; }
     [data-testid="stSidebar"] { background-color: #000000 !important; }
-    
-    /* Make the buttons look more like the PC version */
-    .stButton>button {
-        border-radius: 10px;
-        border: none;
-    }
     </style>
 """, unsafe_allow_html=True)
 

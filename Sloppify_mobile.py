@@ -53,7 +53,7 @@ MUSIC_DIR.mkdir(exist_ok=True)
 # --- SIDEBAR (Matches PC Sidebar Layout) ---
 with st.sidebar:
     st.markdown('<div class="slopify-logo">Slopify</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-text">Premium Sloppy Player</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-text">Spotify but sloppy</div>', unsafe_allow_html=True)
     
     # GIF LOGIC (Matches self.change_gif from PC)
     gif_files = [f for f in os.listdir(BASE_DIR) if f.lower().endswith('.gif')]

@@ -2,16 +2,17 @@ import streamlit as st
 import os
 import random
 import yt_dlp
-from pathlib import Path
 import time
+from pathlib import Path
 
 # --- PAGE CONFIG ---
-st.set_page_config(page_title="Slopify Mobile", layout="wide", initial_sidebar_state="expanded")
+# Setting the favicon to a banana as a nod to the "sloppy" vibe
+st.set_page_config(page_title="Slopify Mobile", page_icon="🍌", layout="wide")
 
 # --- STEP 1: MATCHING THE DESKTOP VIBE (CSS) ---
 st.markdown("""
     <style>
-    /* Pulsing Red Logo - Matching PC Version */
+    /* Pulsing Red Logo - Matches self.update_label_color in PC version */
     @keyframes pulse {
         0% { color: #550000; }
         50% { color: #ff0000; }
@@ -32,9 +33,15 @@ st.markdown("""
         margin-top: -10px;
         margin-bottom: 20px;
     }
-    /* Dark Theme Fixes */
+    /* Dark Theme Fixes to match CustomTkinter Dark Mode */
     .stApp { background-color: #121212; }
     [data-testid="stSidebar"] { background-color: #000000 !important; }
+    
+    /* Make the buttons look more like the PC version */
+    .stButton>button {
+        border-radius: 10px;
+        border: none;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -43,17 +50,18 @@ BASE_DIR = Path(__file__).parent
 MUSIC_DIR = BASE_DIR / "downloads"
 MUSIC_DIR.mkdir(exist_ok=True)
 
-# --- SIDEBAR (Matches PC Sidebar) ---
+# --- SIDEBAR (Matches PC Sidebar Layout) ---
 with st.sidebar:
     st.markdown('<div class="slopify-logo">Slopify</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-text">Premium Sloppy Player</div>', unsafe_allow_html=True)
     
-    # GIF LOGIC (Interactive like PC)
+    # GIF LOGIC (Matches self.change_gif from PC)
     gif_files = [f for f in os.listdir(BASE_DIR) if f.lower().endswith('.gif')]
     if gif_files:
         if 'current_gif' not in st.session_state:
             st.session_state.current_gif = random.choice(gif_files)
         
+        # Display the current GIF (like the AnimatedGIFLabel)
         st.image(str(BASE_DIR / st.session_state.current_gif), use_container_width=True)
         
         if st.button("🎲 CHANGE VIBE", use_container_width=True):
@@ -64,9 +72,10 @@ with st.sidebar:
     st.markdown("### 📥 Downloader")
     query = st.text_input("Song Name or Link", placeholder="Paste here...", key="url_input")
     
+    # FETCH LOGIC (Matches download_logic from PC)
     if st.button("FETCH SONG", use_container_width=True):
         if query:
-            with st.status("Downloading...", expanded=True) as status:
+            with st.status("Decoding & Downloading...", expanded=True) as status:
                 try:
                     ydl_opts = {
                         'format': 'bestaudio/best',
@@ -75,35 +84,47 @@ with st.sidebar:
                         'quiet': True
                     }
                     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                        # Using ytsearch1 to match PC's behavior
                         ydl.download([f"ytsearch1:{query}"])
                     status.update(label="Success!", state="complete")
                     time.sleep(1)
                     st.rerun()
                 except Exception as e:
-                    st.error(f"Error: {e}")
+                    st.error(f"Status: Failed - {e}")
 
 # --- MAIN VIEW (Matches PC Layout) ---
 st.title("🎵 Your Library")
 
-songs = [f for f in os.listdir(MUSIC_DIR) if f.lower().endswith(('.mp3', '.m4a', '.wav'))]
+# Refresh list of songs (Matches self.refresh_list)
+songs = [f for f in os.listdir(MUSIC_DIR) if f.lower().endswith(('.mp3', '.m4a', '.wav', '.opus', '.webm'))]
 
 if not songs:
     st.info("Your library is empty. Use the sidebar to fetch some slop!")
 else:
-    # Song Selection (Matches Listbox)
+    # Song Selection (Simulates the Listbox double-click)
     selected_song = st.selectbox("Select Track", songs, label_visibility="collapsed")
     
     st.markdown(f"**Now Playing:** `{selected_song}`")
     
-    # Audio Player (Mobile Native)
+    # Audio Player (Mobile Native controls for Play/Pause/Seek)
     audio_path = MUSIC_DIR / selected_song
-    with open(audio_path, 'rb') as f:
-        audio_bytes = f.read()
-        st.audio(audio_bytes, format="audio/mp3")
+    try:
+        with open(audio_path, 'rb') as f:
+            audio_bytes = f.read()
+            st.audio(audio_bytes, format="audio/mp3")
+    except Exception as e:
+        st.error(f"Could not play file: {e}")
 
-    # Playlist Display
+    # Playlist Display (Visual list of what's in the downloads folder)
     st.markdown("---")
     st.markdown("### 📋 Playlist")
     for s in songs:
-        icon = "▶️" if s == selected_song else "🔘"
-        st.text(f"{icon} {s}")
+        # Highlight the currently selected song
+        if s == selected_song:
+            st.success(f"▶️ {s}")
+        else:
+            st.text(f"🔘 {s}")
+
+# --- AUTO-REFRESH (Optional) ---
+# Small delay to keep UI snappy
+time.sleep(0.1)
